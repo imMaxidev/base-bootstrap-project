@@ -1,0 +1,82 @@
+// Override Bootstrap's Sass default variables
+//
+// Nearly all variables in Bootstrap are written with the `!default` flag.
+// This allows you to override the default values of those variables before
+// you import Bootstrap's source Sass files.
+//
+// Overriding the default variable values is the best way to customize your
+// CSS without writing _new_ styles. For example, you can either change
+// `$body-color` or write more CSS that override's Bootstrap's CSS like so:
+// `body { color: red; }`.
+
+
+//
+// Bring in Bootstrap
+//
+
+// Option 1
+//
+// Import all of Bootstrap's CSS
+
+// @import "bootstrap/scss/bootstrap";
+
+// Option 2
+//
+// Place variable overrides first, then import just the styles you need. Note that some stylesheets are required no matter what.
+
+// Toggle global options
+$enable-gradients: true;
+$enable-shadows: true;
+$enable-dark-mode: false;
+$darkgreen: #00541f;
+$primary: $darkgreen;
+$secondary: #fd7e14;
+$offcanvas-box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175);
+
+// Include functions first
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+@function generate-color-family($base-color, $color-name) {
+  $color-family: ();
+  @for $i from 1 through 9 {
+    $percentage: if($i ==5, 0%, if($i > 5, ($i - 5) * 20%, (5 - $i) * 20%));
+    $color-value: if($percentage ==0, $base-color, if($i > 5, shade-color($base-color, $percentage), tint-color($base-color, $percentage)));
+    $color-family: map-merge($color-family, ($color-name + if($i !=5, "-#{$i}00", ""): $color-value));
+  }
+  @return $color-family;
+}
+
+@function generate-class-all-colors($all-colors) {
+  $utilities: map-merge($utilities,
+    ("color": map-merge(map-get($utilities, "color"),
+        (values: map-merge(map-get(map-get($utilities, "color"), "values"),
+            ($all-colors),
+          ), 
+        ),
+      )
+    )
+  );
+  @return $utilities;
+}
+
+$darkgreens: generate-color-family($darkgreen, "darkgreen");
+$all-colors: map-merge-multiple($blues, $indigos, $purples, $pinks, $reds, $oranges, $yellows, $greens, $teals, $darkgreens, $cyans);
+$utilities: generate-class-all-colors($all-colors);
+
+//Implementing multiple root vars
+:root,
+[data-bs-theme="light"] {
+  @each $color, $value in $all-colors {
+    --#{$prefix}#{$color}: #{$value};
+  }
+}
+
+@import "bootstrap/scss/bootstrap.scss";
+@import "bootstrap/scss/utilities/api";
+
+
