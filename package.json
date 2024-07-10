@@ -12,7 +12,8 @@
     "css-compile": "sass --style compressed --source-map --embed-sources --no-error-css --load-path=node_modules scss/:css/",
     "css-lint": "stylelint scss/",
     "css-prefix": "postcss --replace css/styles.css --use autoprefixer --map",
-    "css": "npm-run-all css-compile css-prefix",
+    "css-compile-rtl": " rtlcss css/styles.css css/styles.rtl.css",
+    "css": "npm-run-all css-compile css-prefix css-compile-rtl",
     "server": "sirv --dev --no-clear --port 3000",
     "start": "npm-run-all --parallel watch server",
     "watch": "nodemon -e html,scss -x \"npm run css\"",
@@ -20,7 +21,8 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.3"
+    "bootstrap": "^5.3.3",
+    "rtlcss": "^4.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
